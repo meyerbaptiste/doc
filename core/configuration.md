@@ -1,5 +1,7 @@
 # Configuration
 
+## Symfony bundle
+
 Here's the complete configuration of the Symfony bundle with including default values:
 
 ```yaml
@@ -109,6 +111,353 @@ api_platform:
             
         # ...
 ```
+
+## Resources and properties
+
+Resources and their properties can be configured in many ways. Let's focus on annotations, XML and YAML files with the
+same example for each of them. This one contains all possible attributes you may encounter.
+
+### Annotations
+
+Two annotations are provided by API Platform:
+* `@ApiResource` which can be imported from the `ApiPlatform\Core\Annotation\ApiResource` class: configure a resource at
+class level;
+* `@ApiProperty` which can be imported from the `ApiPlatform\Core\Annotation\ApiProperty` class: configure a resource's
+property at property and method level.
+
+```php
+<?php
+// src/AppBundle/Entity/Foo.php
+
+namespace AppBundle\Entity;
+
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiProperty;
+
+/**
+ * @ApiResource(
+ *     shortName="Foo",
+ *     description="A foo resource.",
+ *     iri="http://schema.org/Foo",
+ *     itemOperations={
+ *         "foo"={
+ *             "method"="GET",
+ *             "route_name="foo_item_route",
+ *             "path"="/foo/{bar}",
+ *             "controller"="app.action.foo_item",
+ *             "normalization_context"={ 
+ *                 "groups"={"foo", "bar"},
+ *                 "foo"="bar"
+ *             },
+ *             "denormalization_context={
+ *                 "groups"={"foo", "bar"},
+ *                 "foo"="bar"
+ *             },
+ *             "hydra_context"={
+ *                 "foo"="bar"
+ *             },
+ *             "swagger_context"={
+ *                 "foo"="bar"
+ *             },
+ *             "validation_groups"={"foo", "bar"},
+ *             "force_eager"=false,
+ *             "foo"="bar"
+ *         }    
+ *     },
+ *     collectionOperations={
+ *         "foo"={
+ *             "method"="GET",
+ *             "route_name"="foo_collection_route",
+ *             "path"="/foo/baz",
+ *             "controller"="app.action.foo_collection",
+ *             "normalization_context"={
+ *                 "groups"={"foo", "bar"},
+ *                 "foo"="bar"
+ *             },
+ *             "denormalization_context"={
+ *                 "groups"={"foo", "bar"},
+ *                 "foo"="bar"
+ *             },
+ *             "hydra_context"={
+ *                 "foo"="bar"
+ *             },
+ *             "swagger_context"={
+ *                 "foo"="bar"
+ *             },
+ *             "validation_groups"={"foo", "bar"},
+ *             "force_eager"=true,
+ *             "filters"={"foo.search", "foo.boolean"},
+ *             "pagination_enabled"=true,
+ *             "pagination_items_per_page"=30,
+ *             "pagination_client_enabled"=true,
+ *             "pagination_client_items_per_page"=30,
+ *             "foo"="bar"
+ *         }
+ *     },
+ *     attributes={
+ *         "force_eager"=false,
+ *         "filters"={"foo.date"},
+ *         "normalization_context"={ 
+ *             "groups"={"foo", "bar"},
+ *             "foo"="bar",
+ *         },
+ *         "denormalization_context"={
+ *             "groups"={"foo", "bar"},
+ *             "foo"="bar"
+ *         },
+ *         "pagination_enabled"=true,
+ *         "pagination_items_per_page"=30,
+ *         "pagination_client_enabled"=true,
+ *         "pagination_client_items_per_page"=30,
+ *         "foo"="bar"
+ *     }
+ * }
+ */
+class Foo
+{
+    /**
+     * @ApiProperty(
+     *     description="A bar property.",
+     *     iri="http://schema.org/Bar",
+     *     readable=true,
+     *     writable=true,
+     *     readableLink=false,
+     *     writableLink=false,
+     *     required=true,
+     *     identifier=false,
+     *     attributes={
+     *         "jsonld_context"={
+     *             "foo"="bar"
+     *         },
+     *         "foo"="bar"      
+     *     }
+     * )
+     */
+    public $bar;
+}
+```
+
+N.B. If you use the Symfony bundle, all entities in your `Entity/` directory of your bundle directories (e.g.
+`src/AppBundle/Entity/`) will be automatically loaded and parsed.
+
+### YAML
+
+```yaml
+# src/AppBundle/Resources/config/api_resources/foo.yml
+
+resources:
+    AppBundle\Entity\Foo:
+        shortName: 'Foo'
+        description: 'A foo resource.'
+        iri: 'http://schema.org/Foo'
+        itemOperations:
+            foo:
+                method: 'GET'
+                route_name: 'foo_item_route'
+                path: '/foo/{bar}'
+                controller: 'app.action.foo_item'
+                normalization_context:
+                    groups: ['foo', 'bar']
+                    foo: 'bar'
+                denormalization_context:
+                    groups: ['foo', 'bar']
+                    foo: 'bar'
+                hydra_context:
+                    foo: 'bar'
+                swagger_context:
+                    foo: 'bar'
+                validation_groups: ['foo', 'bar']
+                force_eager: false
+                foo: 'bar'
+        collectionOperations:
+            foo:
+                method: 'GET'
+                route_name: 'foo_collection_route'
+                path: '/foo/baz'
+                controller: 'app.action.foo_collection'
+                normalization_context:
+                    groups: ['foo', 'bar']
+                    foo: 'bar'
+                denormalization_context:
+                    groups: ['foo', 'bar']
+                    foo: 'bar'
+                hydra_context:
+                    foo: 'bar'
+                swagger_context:
+                    foo: 'bar'
+                validation_groups: ['foo', 'bar']
+                force_eager: true
+                filters: ['foo.search', 'foo.boolean']
+                pagination_enabled: true
+                pagination_items_per_page: 30
+                pagination_client_enabled: true
+                pagination_client_items_per_page: 30
+                foo: 'bar'
+        attributes:
+            force_eager: false
+            filters: ['foo.date']
+            normalization_context:
+                groups: ['foo', 'bar']
+                foo: 'bar'
+            denormalization_context:
+                groups: ['foo', 'bar']
+                foo: 'bar'
+            pagination_enabled: true
+            pagination_items_per_page: 30
+            pagination_client_enabled: true
+            pagination_client_items_per_page: 30
+            foo: 'bar'
+        properties:
+            bar:
+                description: 'A bar property.'
+                iri: 'http://schema.org/Bar'
+                readable: true
+                writable: true
+                readableLink: false
+                writableLink: false
+                required: true
+                identifier: false
+                attributes:
+                    jsonld_context:
+                        foo: 'bar'
+                    foo: 'bar'
+```
+
+N.B. If you use the Symfony bundle, your YAML config files must be located in the `Resources/config/api_resources/`
+directory of your bundle directory (e.g. `src/AppBundle/Resources/config/api_resources/`) to be automatically loaded and
+parsed.
+
+### XML
+
+```xml
+<!-- src/AppBundle/Resources/config/api_resources/foo.xml -->
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <resource
+        class="AppBundle\Entity\Foo"
+        shortName="Foo"
+        description="A foo resource."
+        iri="http://schema.org/Foo"
+    >
+        <itemOperation name="foo">
+            <attribute name="method">GET</attribute>
+            <attribute name="route_name">foo_item_route</attribute>
+            <attribute name="path">/foo/{bar}</attribute>
+            <attribute name="controller">app.action.foo_item</attribute>
+            <attribute name="normalization_context">
+                <attribute name="groups">
+                    <attribute>foo</attribute>
+                    <attribute>bar</attribute>
+                </attribute>
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="denormalization_context">
+                <attribute name="groups">
+                    <attribute>foo</attribute>
+                    <attribute>bar</attribute>
+                </attribute>
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="hydra_context">
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="swagger_context">
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="validation_groups">
+                <attribute>foo</attribute>
+                <attribute>bar</attribute>
+            </attribute>
+            <attribute name="force_eager">false</attribute>
+            <attribute name="foo">bar</attribute>
+        </itemOperation>
+        <collectionOperation name="foo">
+            <attribute name="method">GET</attribute>
+            <attribute name="route_name">foo_collection_route</attribute>
+            <attribute name="path">/foo/baz</attribute>
+            <attribute name="controller">app.action.foo_collection</attribute>
+            <attribute name="normalization_context">
+                <attribute name="groups">
+                    <attribute>foo</attribute>
+                    <attribute>bar</attribute>
+                </attribute>
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="denormalization_context">
+                <attribute name="groups">
+                    <attribute>foo</attribute>
+                    <attribute>bar</attribute>
+                </attribute>
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="hydra_context">
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="swagger_context">
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="validation_groups">
+                <attribute>foo</attribute>
+                <attribute>bar</attribute>
+            </attribute>
+            <attribute name="force_eager">true</attribute>
+            <attribute name="filters">
+                <attribute>foo.search</attribute>
+                <attribute>foo.boolean</attribute>
+            </attribute>
+            <attribute name="pagination_enabled">true</attribute>
+            <attribute name="pagination_items_per_page">30</attribute>
+            <attribute name="pagination_client_enabled">true</attribute>
+            <attribute name="pagination_client_items_per_page">30</attribute>
+            <attribute name="foo">bar</attribute>
+        </collectionOperation>
+        <attribute name="force_eager">false</attribute>
+        <attribute name="filters">
+            <attribute>foo.date</attribute>
+        </attribute>
+        <attribute name="normalization_context">
+            <attribute name="groups">
+                <attribute>foo</attribute>
+                <attribute>bar</attribute>
+            </attribute>
+            <attribute name="foo">bar</attribute>
+        </attribute>
+        <attribute name="denormalization_context">
+            <attribute name="groups">
+                <attribute>foo</attribute>
+                <attribute>bar</attribute>
+            </attribute>
+            <attribute name="foo">bar</attribute>
+        </attribute>
+        <attribute name="pagination_enabled">true</attribute>
+        <attribute name="pagination_items_per_page">30</attribute>
+        <attribute name="pagination_client_enabled">true</attribute>
+        <attribute name="pagination_client_items_per_page">30</attribute>
+        <attribute name="foo">bar</attribute>
+        <property
+            name="bar"
+            description="A bar property."
+            iri="http://schema.org/Bar"
+            readable="true"
+            writable="true"
+            readableLink="false"
+            writableLink="false"
+            required="true"
+            identifier="false"
+        >
+            <attribute name="jsonld_context">
+                <attribute name="foo">bar</attribute>
+            </attribute>
+            <attribute name="foo">bar</attribute>
+        </property>
+    </resource>
+</resources>
+```
+
+N.B. If you use the Symfony bundle, your XML config files must be located in the `Resources/config/api_resources/`
+directory of your bundle directory (e.g. `src/AppBundle/Resources/config/api_resources/`) to be automatically loaded and
+parsed.
 
 Previous chapter: [Getting Started](getting-started.md)
 
